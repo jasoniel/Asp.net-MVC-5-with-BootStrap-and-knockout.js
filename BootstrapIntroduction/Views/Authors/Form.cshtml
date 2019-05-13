@@ -1,0 +1,83 @@
+﻿@using BootstrapIntroduction.Extensions
+@model BootstrapIntroduction.ViewModels.AuthorViewModel
+
+@{
+    var isCreating = Model.Id == 0;
+    ViewBag.Title = isCreating ? "Create" : "Edit";
+
+    var btnSubmitText = isCreating ? "Create" : "Update";
+}
+
+
+
+<div data-bind="visible: !saveCompleted()">
+
+    <h2>ViewBag.Title</h2>
+
+    @using (Html.BeginForm("Create", "Authors", FormMethod.Post, new { data_bing = "submit: validateAndSave" }))
+    {
+        @Html.AntiForgeryToken();
+
+
+        <div class="form-horizontal">
+            <h4>Author</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.FirstName, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.firstName" } })
+                    @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.LastName, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.lastName" } })
+                    @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Biography, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(m => m.Biography, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.biography" } })
+                    @Html.ValidationMessageFor(m => m.Biography, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10" data-bind="visible: !sending()">
+                    <input type="submit" value="@btnSubmitText" class="btn btn-default" />
+                </div>
+
+                <div class="progress" data-bind="visible: sending">
+                    <div class="progress-bar progress-bar-info progress-bar-striped active"
+                         role="progressbar"
+                         aria-valuenow="100"
+                         aria-valuemin="0"
+                         aria-valuemax="100"
+                         style="width: 100%">
+                        <span class="sr-only"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts{
+
+
+    @Scripts.Render("~/bundles/jqueryval", "~/Scripts/ViewModels/AuthorFormViewModel.js")
+    <script>
+        var viewModel = new AuthorFormViewModel(@Html.HtmlConvertToJson(Model));
+        ko.applyBindings(viewModel)
+    </script>
+}

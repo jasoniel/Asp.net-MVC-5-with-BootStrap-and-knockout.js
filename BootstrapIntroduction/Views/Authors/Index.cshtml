@@ -1,0 +1,57 @@
+﻿@using BootstrapIntroduction.ViewModels
+@using BootstrapIntroduction.Extensions
+
+@model ResultList<AuthorViewModel>
+
+@{
+    ViewBag.Title = "Authors";
+    var queryOptions = Model.QueryOptions;
+}
+
+<h2>Authors</h2>
+
+<p>@Html.ActionLink("Create New","Create")</p>
+
+
+<div style="display: none" data-bind="visible: pagingService.entities.length > 0">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>@Html.BuildKnockoutSortableLink("First Name", "Index", "firstName")</th>
+                <th>@Html.BuildKnockoutSortableLink("Last Name", "Index", "lastName")</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: pagingService.entities">
+            <tr>
+                <td data-bind="text: firstName"></td>
+                <td data-bind="text: lastName"></td>
+                <td>
+                    <a data-bind="attr: { href: '@Url.Action("Details")/'+id}" class="btn btn-info">Details</a>
+                    <a data-bind="attr: { href: '@Url.Action("Edit")/'+id}" class="btn btn-primary">Edit</a>
+                    <a data-bind="click: $parent.showDeleteModal,attr: { href: '@Url.Action("Delete")/'+id}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    @Html.BuildKnockoutNextPreviousLinks("Index")
+</div>
+
+<div style="display: none" data-bind="visible: pagingService.entities.length === 0"
+     class="alert alert-warning alert-dismissable" role="alert">
+    <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+        <span class="sr-only">&times;</span>
+    </button>
+    There are no authors to display.
+        Click @Html.ActionLink("Here", "Create") to create one now.
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Services/PagingService.js","/Scripts/ViewModels/AuthorIndexViewModel.js")
+<script>
+    var viewModel = new AuthorIndexViewModel(@Html.HtmlConvertToJson(Model));
+    ko.applyBindings(viewModel)
+</script>    
+}
