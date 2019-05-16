@@ -14,6 +14,7 @@ namespace BootstrapIntroduction.App_Start
         {
 
             config.Filters.Add(new ValidationActionFilterAttribute());
+            config.Filters.Add(new OnApiExceptionAttribute());
 
             config.MapHttpAttributeRoutes();
 

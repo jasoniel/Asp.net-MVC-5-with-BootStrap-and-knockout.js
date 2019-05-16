@@ -48,7 +48,7 @@ namespace BootstrapIntroduction.Controllers
 
             if(autor == null)
             {
-                return HttpNotFound();
+                throw new System.Data.Entity.Core.ObjectNotFoundException($"Unable to find author with id {id}");
             }
 
             var configuration = new MapperConfiguration(cfg =>

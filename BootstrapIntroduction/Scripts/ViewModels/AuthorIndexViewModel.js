@@ -2,6 +2,7 @@
 
 function AuthorIndexViewModel(resultList) {
 
+    console.log(resultList)
     var self = this 
 
     self.pagingService = new PagingService(resultList) 

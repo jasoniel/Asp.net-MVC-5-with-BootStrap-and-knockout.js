@@ -21,19 +21,26 @@ namespace BootstrapIntroduction.Controllers.api
         private BookContext db = new BookContext();
 
 
-
-        public ResultList<AuthorViewModel> Get([FromUri] QueryOptions queryOptions )
+        [ResponseType(typeof(AuthorViewModel))]
+        public IHttpActionResult Get(int id )
         {
 
 
-            var start = (queryOptions.CurrentPage - 1) * queryOptions.PageSize;
+            var author = db.Authors.Find(id);
 
-            var authors = db.Authors
-                    .OrderBy(queryOptions.Sort)
-                    .Skip(start)
-                    .Take(queryOptions.PageSize);
+            if(author == null)
+            {
+                throw new System.Data.Entity.Core.ObjectNotFoundException($"Unable to find author with id {id}");
+            }
 
-            queryOptions.TotalPages = (int)Math.Ceiling((double)db.Authors.Count() / queryOptions.PageSize);
+            //var start = (queryOptions.CurrentPage - 1) * queryOptions.PageSize;
+
+            //var authors = db.Authors
+            //        .OrderBy(queryOptions.Sort)
+            //        .Skip(start)
+            //        .Take(queryOptions.PageSize);
+
+            //queryOptions.TotalPages = (int)Math.Ceiling((double)db.Authors.Count() / queryOptions.PageSize);
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -41,7 +48,8 @@ namespace BootstrapIntroduction.Controllers.api
             });
 
             var mapper = configuration.CreateMapper();
-            return new ResultList<AuthorViewModel>(mapper.Map<List<Author>, List<AuthorViewModel>>(db.Authors.ToList()), queryOptions);
+            return Ok(mapper.Map<Author,AuthorViewModel>(author));
+            //return new ResultList<AuthorViewModel>(mapper.Map<List<Author>, List<AuthorViewModel>>(db.Authors.ToList()), queryOptions);
 
         } 
         
