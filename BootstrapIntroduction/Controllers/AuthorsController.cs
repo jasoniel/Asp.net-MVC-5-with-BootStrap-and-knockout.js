@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BootstrapIntroduction.DAL;
+using BootstrapIntroduction.Filters;
 using BootstrapIntroduction.Models;
 using BootstrapIntroduction.ViewModels;
 using System;
@@ -19,6 +20,7 @@ namespace BootstrapIntroduction.Controllers
 
         private BookContext db = new BookContext();
         // GET: Authors
+        [GenerateResultListFilter(typeof(Author), typeof(AuthorViewModel))]
         public ActionResult Index([Form] QueryOptions queryOptions)
         {
             var start = (queryOptions.CurrentPage - 1) * queryOptions.PageSize;
@@ -30,18 +32,8 @@ namespace BootstrapIntroduction.Controllers
 
             queryOptions.TotalPages = (int)Math.Ceiling((double)db.Authors.Count() / queryOptions.PageSize);
 
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Author, AuthorViewModel>();
-            });
-            
-            var mapper = configuration.CreateMapper();
-
-            return View(new ResultList<AuthorViewModel>
-            {
-                QueryOptions = queryOptions,
-                Results = mapper.Map<List<Author>, List<AuthorViewModel>>(authors.ToList())
-            });
+            ViewData["QueryOptions"] = queryOptions;
+            return View(authors.ToList());
         }
 
         public ActionResult Details(int? id)
@@ -66,7 +58,7 @@ namespace BootstrapIntroduction.Controllers
             
             var mapper = configuration.CreateMapper();
 
-            return View(mapper.Map<Author,AuthorViewModel>(autor));
+            return View("Form",mapper.Map<Author,AuthorViewModel>(autor));
         }
 
 
@@ -87,7 +79,7 @@ namespace BootstrapIntroduction.Controllers
                 });
 
                 var mapper = configuration.CreateMapper();
-
+                
                 db.Authors.Add(mapper.Map<AuthorViewModel,Author>(author));
                 db.SaveChanges();
                 return RedirectToAction("Index");

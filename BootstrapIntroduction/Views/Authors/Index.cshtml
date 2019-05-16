@@ -13,7 +13,7 @@
 <p>@Html.ActionLink("Create New","Create")</p>
 
 
-<div style="display: none" data-bind="visible: pagingService.entities.length > 0">
+<div style="display: none" data-bind="visible: pagingService.entities().length > 0">
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -38,7 +38,7 @@
     @Html.BuildKnockoutNextPreviousLinks("Index")
 </div>
 
-<div style="display: none" data-bind="visible: pagingService.entities.length === 0"
+<div style="display: none" data-bind="visible: pagingService.entities().length === 0"
      class="alert alert-warning alert-dismissable" role="alert">
     <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
@@ -49,8 +49,10 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/Scripts/Services/PagingService.js","/Scripts/ViewModels/AuthorIndexViewModel.js")
+    @Scripts.Render("~/Scripts/Services/PagingService.js", "~/Scripts/ViewModels/AuthorIndexViewModel.js")
 <script>
+
+   
     var viewModel = new AuthorIndexViewModel(@Html.HtmlConvertToJson(Model));
     ko.applyBindings(viewModel)
 </script>    

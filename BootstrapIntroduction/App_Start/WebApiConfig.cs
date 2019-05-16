@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BootstrapIntroduction.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,6 +13,7 @@ namespace BootstrapIntroduction.App_Start
         public static void Register(HttpConfiguration config)
         {
 
+            config.Filters.Add(new ValidationActionFilterAttribute());
 
             config.MapHttpAttributeRoutes();
 

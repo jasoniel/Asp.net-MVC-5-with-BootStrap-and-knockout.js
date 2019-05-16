@@ -1,6 +1,5 @@
 ﻿function AuthorFormViewModel(author) {
 
-
     var self = this;
 
     self.saveCompleted = ko.observable(false);
@@ -16,6 +15,7 @@
 
     self.validateAndSave = function (form) {
 
+        console.log(form)
         if (!$(form).valid())
             return false;
 

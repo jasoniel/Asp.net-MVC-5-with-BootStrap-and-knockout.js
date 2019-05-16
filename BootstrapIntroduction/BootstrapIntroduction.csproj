@@ -18,7 +18,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <Use64BitIISExpress />
+    <Use64BitIISExpress>true</Use64BitIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -170,6 +170,9 @@
     <Compile Include="DAL\BookContext.cs" />
     <Compile Include="DAL\BookInitializer.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
+    <Compile Include="Filters\GenerateResultListFilterAttribute.cs" />
+    <Compile Include="Filters\OnApiExceptionAttribute.cs" />
+    <Compile Include="Filters\ValidationActionFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

@@ -41,13 +41,7 @@ namespace BootstrapIntroduction.Controllers.api
             });
 
             var mapper = configuration.CreateMapper();
-
-            return new ResultList<AuthorViewModel>
-            {
-                QueryOptions = queryOptions,
-                Results = mapper.Map<List<Author>, List<AuthorViewModel>>(db.Authors.ToList())
-
-            };
+            return new ResultList<AuthorViewModel>(mapper.Map<List<Author>, List<AuthorViewModel>>(db.Authors.ToList()), queryOptions);
 
         } 
         

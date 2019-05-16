@@ -14,7 +14,7 @@
 
     <h2>ViewBag.Title</h2>
 
-    @using (Html.BeginForm("Create", "Authors", FormMethod.Post, new { data_bing = "submit: validateAndSave" }))
+    @using (Html.BeginForm("Create", "Authors", FormMethod.Post, new { data_bind = "submit: validateAndSave" }))
     {
         @Html.AntiForgeryToken();
 
@@ -26,7 +26,7 @@
             <div class="form-group">
                 @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(m => m.FirstName, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.firstName" } })
+                    @Html.EditorFor(m => m.FirstName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: author.firstName" } })
                     @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
 
                 </div>
@@ -34,14 +34,14 @@
             <div class="form-group">
                 @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(m => m.LastName, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.lastName" } })
+                    @Html.EditorFor(m => m.LastName, new { htmlAttributes = new { @class = "form-control", data_bind = "value: author.lastName" } })
                     @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.Biography, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(m => m.Biography, new { htmlAttributes = new { @class = "form-control", data_bing = "value: author.biography" } })
+                    @Html.EditorFor(m => m.Biography, new { htmlAttributes = new { @class = "form-control", data_bind = "value: author.biography" } })
                     @Html.ValidationMessageFor(m => m.Biography, "", new { @class = "text-danger" })
 
                 </div>
