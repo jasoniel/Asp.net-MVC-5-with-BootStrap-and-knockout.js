@@ -12,7 +12,7 @@
 
 <div data-bind="visible: !saveCompleted()">
 
-    <h2>ViewBag.Title</h2>
+    <h2>@ViewBag.Title</h2>
 
     @using (Html.BeginForm("Create", "Authors", FormMethod.Post, new { data_bind = "submit: validateAndSave" }))
     {

@@ -34,7 +34,7 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>2</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -164,6 +164,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Behaviors\QueryOptionsCalculator.cs" />
     <Compile Include="Controllers\api\AuthorsController.cs" />
     <Compile Include="Controllers\AuthorsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="DAL\BookInitializer.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="Filters\BasicAuthenticationAttribure.cs" />
+    <Compile Include="Filters\BasicAuthorizationAttribute.cs" />
     <Compile Include="Filters\GenerateResultListFilterAttribute.cs" />
     <Compile Include="Filters\OnApiExceptionAttribute.cs" />
     <Compile Include="Filters\OnExceptionAttribute.cs" />
@@ -183,6 +185,7 @@
     <Compile Include="Models\Book.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\AuthorService.cs" />
     <Compile Include="ViewModels\AuthorViewModel.cs" />
     <Compile Include="ViewModels\QueryOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

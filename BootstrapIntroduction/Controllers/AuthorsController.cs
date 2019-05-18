@@ -2,6 +2,7 @@
 using BootstrapIntroduction.DAL;
 using BootstrapIntroduction.Filters;
 using BootstrapIntroduction.Models;
+using BootstrapIntroduction.Services;
 using BootstrapIntroduction.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,81 +16,63 @@ using System.Web.Mvc;
 
 namespace BootstrapIntroduction.Controllers
 {
+    [RoutePrefix("Writer")]
     public class AuthorsController : Controller
     {
 
-        private BookContext db = new BookContext();
+        private AuthorService authorService;
+        private MapperConfiguration configuration;
+
+        public AuthorsController()
+        {
+            authorService = new AuthorService();
+
+
+            configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Author, AuthorViewModel>();
+            });
+
+        }
+
         // GET: Authors
         [GenerateResultListFilter(typeof(Author), typeof(AuthorViewModel))]
+        [Route("~/Writers")]
         public ActionResult Index([Form] QueryOptions queryOptions)
         {
-            var start = (queryOptions.CurrentPage - 1) * queryOptions.PageSize;
-          
-            var authors = db.Authors
-                            .OrderBy(queryOptions.Sort)
-                            .Skip(start)
-                            .Take(queryOptions.PageSize);
-
-            queryOptions.TotalPages = (int)Math.Ceiling((double)db.Authors.Count() / queryOptions.PageSize);
+            var authors = authorService.Get(queryOptions);
 
             ViewData["QueryOptions"] = queryOptions;
+
             return View(authors.ToList());
         }
 
+        [Route("Details/{id:int:min(0)?}")]
         public ActionResult Details(int? id)
         {
             if(id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-
-            var autor = db.Authors.Find(id);
+            
+            var autor = authorService.GetById(id.Value);
 
             if(autor == null)
             {
                 throw new System.Data.Entity.Core.ObjectNotFoundException($"Unable to find author with id {id}");
             }
-
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Author, AuthorViewModel>();
-            });
-            
             var mapper = configuration.CreateMapper();
 
             return View("Form",mapper.Map<Author,AuthorViewModel>(autor));
         }
 
-
+        [BasicAuthorization]
         public ActionResult Create()
         {
             return View("Form", new AuthorViewModel());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include ="Id,FirstName,LastName,Biography")] AuthorViewModel author)
-        {
-            if (ModelState.IsValid)
-            {
-                var configuration = new MapperConfiguration(cfg =>
-                {
-                    cfg.CreateMap<AuthorViewModel, Author>();
-                });
-
-                var mapper = configuration.CreateMapper();
-                
-                db.Authors.Add(mapper.Map<AuthorViewModel,Author>(author));
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            
-
-            return View(author);
-        }
-
+        [BasicAuthorization]
         public ActionResult Edit(int? id)
         {
             if(id == null)
@@ -97,84 +80,51 @@ namespace BootstrapIntroduction.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var author = db.Authors.Find(id);
+            var author = authorService.GetById(id.Value);
 
             if(author == null)
             {
                 return HttpNotFound();
             }
 
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Author, AuthorViewModel>();
-            });
-
             var mapper = configuration.CreateMapper();
-
 
             return View("Form", mapper.Map<Author,AuthorViewModel>(author));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,Biography")] AuthorViewModel author)
-
-        {
-            if(ModelState.IsValid)
-            {
-
-                var configuration = new MapperConfiguration(cfg =>
-                {
-                    cfg.CreateMap<Author, AuthorViewModel>();
-                });
-
-                var mapper = configuration.CreateMapper();
-
-                db.Entry(mapper.Map<AuthorViewModel,Author>(author)).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-
-            return View(author);
-        }
-
+        
+        [BasicAuthorization]
         public ActionResult Delete(int? id)
         {
             if(id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var author = db.Authors.Find(id);
+            var author = authorService.GetById(id.Value);
 
             if(author == null)
             {
                 return HttpNotFound();
             }
-
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Author, AuthorViewModel>();
-            });
-
             var mapper = configuration.CreateMapper();
 
             return View(mapper.Map<Author, AuthorViewModel>(author));
         }
         [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [BasicAuthorization]
         public ActionResult DeleteConfirmed(int id)
         {
-            var author = db.Authors.Find(id);
-            db.Authors.Remove(author);
-            db.SaveChanges();
+            var author = authorService.GetById(id);
+
+            authorService.Delete(author);
             return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                db.Dispose();
+                authorService.Dispose();
 
             base.Dispose(disposing);
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BootstrapIntroduction.DAL;
 using BootstrapIntroduction.Models;
+using BootstrapIntroduction.Services;
 using BootstrapIntroduction.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -16,41 +17,45 @@ namespace BootstrapIntroduction.Controllers.api
 {
     public class AuthorsController : ApiController
     {
+        
+        private AuthorService authorService;
+        private MapperConfiguration configuration;
+        private IMapper mapper;
+        public AuthorsController()
+        {
 
+            authorService = new AuthorService();
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Author, AuthorViewModel>();
+                cfg.CreateMap<AuthorViewModel,Author>();
+            });
 
-        private BookContext db = new BookContext();
+            mapper = configuration.CreateMapper();
 
+        }
+
+        public ResultList<AuthorViewModel> Get([FromUri] QueryOptions queryOptions)
+        {
+            var authors = authorService.Get(queryOptions);
+            return new ResultList<AuthorViewModel>(
+                    mapper.Map<List<Author>, List<AuthorViewModel>>(authors), queryOptions
+                );
+        }
 
         [ResponseType(typeof(AuthorViewModel))]
         public IHttpActionResult Get(int id )
         {
 
-
-            var author = db.Authors.Find(id);
+            var author = authorService.GetById(id);
 
             if(author == null)
             {
                 throw new System.Data.Entity.Core.ObjectNotFoundException($"Unable to find author with id {id}");
             }
 
-            //var start = (queryOptions.CurrentPage - 1) * queryOptions.PageSize;
-
-            //var authors = db.Authors
-            //        .OrderBy(queryOptions.Sort)
-            //        .Skip(start)
-            //        .Take(queryOptions.PageSize);
-
-            //queryOptions.TotalPages = (int)Math.Ceiling((double)db.Authors.Count() / queryOptions.PageSize);
-
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Author, AuthorViewModel>();
-            });
-
-            var mapper = configuration.CreateMapper();
+           
             return Ok(mapper.Map<Author,AuthorViewModel>(author));
-            //return new ResultList<AuthorViewModel>(mapper.Map<List<Author>, List<AuthorViewModel>>(db.Authors.ToList()), queryOptions);
-
         } 
         
         [ResponseType(typeof(void))]
@@ -61,16 +66,7 @@ namespace BootstrapIntroduction.Controllers.api
                 return BadRequest(ModelState);
             }
 
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<AuthorViewModel, Author>();
-            });
-
-            var mapper = configuration.CreateMapper();
-
-            db.Entry(mapper.Map<AuthorViewModel, Author>(author)).State = EntityState.Modified;
-
-            db.SaveChanges();
+            authorService.Update(mapper.Map<AuthorViewModel, Author>(author));
 
             return StatusCode(HttpStatusCode.NoContent);
         }
@@ -83,25 +79,26 @@ namespace BootstrapIntroduction.Controllers.api
             {
                 return BadRequest(ModelState);
             }
-
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<AuthorViewModel, Author>();
-            });
-
-            var mapper = configuration.CreateMapper();
-
-            db.Authors.Add(mapper.Map<AuthorViewModel, Author>(author));
-            db.SaveChanges();
+            authorService.Insert(mapper.Map<AuthorViewModel, Author>(author));
 
             return CreatedAtRoute("DefaultApi", new { id = author.Id }, author);
 
         }
 
+        [ResponseType(typeof(Author))]
+        public IHttpActionResult DeleteAuthor(int id)
+        {
+
+            var author = authorService.GetById(id);
+            authorService.Delete(author);
+
+            return Ok(author);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                db.Dispose();
+                authorService.Dispose();
 
             base.Dispose(disposing);             
         }
